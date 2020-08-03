@@ -132,7 +132,8 @@ export class Firestore extends LiteFirestore
 
   _terminate(): Promise<void> {
     debugAssert(!this._terminated, 'Cannot invoke _terminate() more than once');
-    return this._queue.enqueueAndInitiateShutdown(async () => {
+    this._queue.initiateShutdown();
+    return this._queue.enqueueEvenAfterShutdown(async () => {
       await super._terminate();
       await removeComponents(this);
 

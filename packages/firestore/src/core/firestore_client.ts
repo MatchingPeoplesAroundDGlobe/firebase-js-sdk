@@ -359,8 +359,9 @@ export class FirestoreClient {
   }
 
   terminate(): Promise<void> {
-    return this.asyncQueue
-      .enqueueAndInitiateShutdown(async () => {
+    this.asyncQueue.initiateShutdown();
+    return this.asyncQueue.enqueueEvenAfterShutdown(async () => {
+      try {
         // PORTING NOTE: LocalStore does not need an explicit shutdown on web.
         if (this.gcScheduler) {
           this.gcScheduler.stop();
@@ -379,29 +380,14 @@ export class FirestoreClient {
         await this.sharedClientState.shutdown();
         await this.persistence.shutdown();
         await this.persistence.shutdown();
-      })
-      .then(() => {
-        return this.asyncQueue.enqueueAndInitiateShutdown(async () => {
-          // PORTING NOTE: LocalStore does not need an explicit shutdown on web.
-          if (this.gcScheduler) {
-            this.gcScheduler.stop();
-            this.gcScheduler.stop();
-          }
-
-          await this.remoteStore.shutdown();
-          await this.remoteStore.shutdown();
-          // `removeChangeListener` must be called after shutting down the
-          // RemoteStore as it will prevent the RemoteStore from retrieving
-          // auth tokens.
-          this.credentials.removeChangeListener();
-          this.credentials.removeChangeListener();
-
-          await this.sharedClientState.shutdown();
-          await this.sharedClientState.shutdown();
-          await this.persistence.shutdown();
-          await this.persistence.shutdown();
-        });
-      });
+      } catch (e) {
+        const firestoreError = wrapInUserErrorIfRecoverable(
+          e,
+          `Failed to shutdown persistence`
+        );
+        throw firestoreError;
+      }
+    });
   }
 
   /**
