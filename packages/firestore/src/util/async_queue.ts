@@ -289,7 +289,7 @@ export class AsyncQueue {
    * Once this method is called, the only possible way to request running an operation
    * is through `enqueueAndForgetEvenAfterShutdown`.
    */
-  async enqueueAndInitiateShutdown(op: () => Promise<void>): Promise<void> {
+  enqueueAndInitiateShutdown(op: () => Promise<void>): Promise<void> {
     this.verifyNotFailed();
     if (!this._isShuttingDown) {
       this._isShuttingDown = true;
@@ -297,8 +297,8 @@ export class AsyncQueue {
       if (window) {
         window.removeEventListener('visibilitychange', this.visibilityHandler);
       }
-      await this.enqueueEvenAfterShutdown(op);
     }
+    return this.enqueueEvenAfterShutdown(op);
   }
 
   /**
