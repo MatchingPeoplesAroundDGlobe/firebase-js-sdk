@@ -24,7 +24,8 @@ import {
   EventManager,
   listen,
   Observer,
-  QueryListener
+  QueryListener,
+  unlisten
 } from '../../../src/core/event_manager';
 import {
   canonifyQuery,
@@ -430,7 +431,7 @@ abstract class TestRunner {
     const eventEmitter = this.queryListeners.get(query);
     debugAssert(!!eventEmitter, 'There must be a query to unlisten too!');
     this.queryListeners.delete(query);
-    await this.queue.enqueue(() => this.eventManager.unlisten(eventEmitter!));
+    await this.queue.enqueue(() => unlisten(this.eventManager, eventEmitter!));
   }
 
   private doSet(setSpec: SpecUserSet): Promise<void> {

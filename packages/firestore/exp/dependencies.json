@@ -1220,7 +1220,6 @@
                 "tryGetCustomObjectType",
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
-                "unlisten",
                 "validateArgType",
                 "validateDocumentPath",
                 "validateExactNumberOfArgs",
@@ -1349,7 +1348,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 199893
+        "sizeInBytes": 198487
     },
     "arrayRemove": {
         "dependencies": {
@@ -1889,7 +1888,6 @@
                 "transformOperationEquals",
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
-                "unlisten",
                 "valueCompare",
                 "valueEquals",
                 "verifyNotTerminated",
@@ -2001,7 +1999,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 182281
+        "sizeInBytes": 180875
     },
     "deleteField": {
         "dependencies": {
@@ -2251,7 +2249,6 @@
                 "transformOperationEquals",
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
-                "unlisten",
                 "valueCompare",
                 "valueEquals",
                 "verifyNotTerminated",
@@ -2361,7 +2358,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 181899
+        "sizeInBytes": 180493
     },
     "doc": {
         "dependencies": {
@@ -3132,7 +3129,6 @@
                 "transformOperationEquals",
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
-                "unlisten",
                 "updateTrackedLimbos",
                 "updateView",
                 "upgradeMutationBatchSchemaAndMigrateData",
@@ -3303,7 +3299,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 301114
+        "sizeInBytes": 299786
     },
     "enableNetwork": {
         "dependencies": {
@@ -3511,7 +3507,6 @@
                 "transformOperationEquals",
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
-                "unlisten",
                 "valueCompare",
                 "valueEquals",
                 "verifyNotTerminated",
@@ -3621,7 +3616,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 181896
+        "sizeInBytes": 180490
     },
     "endAt": {
         "dependencies": {
@@ -4094,6 +4089,7 @@
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
                 "unlisten",
+                "unlisten$1",
                 "updateTrackedLimbos",
                 "updateView",
                 "validateArgType",
@@ -4233,7 +4229,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 212161
+        "sizeInBytes": 212323
     },
     "getDocFromCache": {
         "dependencies": {
@@ -4707,6 +4703,7 @@
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
                 "unlisten",
+                "unlisten$1",
                 "updateTrackedLimbos",
                 "updateView",
                 "validateArgType",
@@ -4846,7 +4843,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 212217
+        "sizeInBytes": 212379
     },
     "getDocs": {
         "dependencies": {
@@ -5074,6 +5071,7 @@
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
                 "unlisten",
+                "unlisten$1",
                 "updateTrackedLimbos",
                 "updateView",
                 "validateArgType",
@@ -5216,7 +5214,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 214724
+        "sizeInBytes": 214886
     },
     "getDocsFromCache": {
         "dependencies": {
@@ -5703,6 +5701,7 @@
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
                 "unlisten",
+                "unlisten$1",
                 "updateTrackedLimbos",
                 "updateView",
                 "validateArgType",
@@ -5844,7 +5843,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 214462
+        "sizeInBytes": 214624
     },
     "getFirestore": {
         "dependencies": {
@@ -6293,6 +6292,7 @@
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
                 "unlisten",
+                "unlisten$1",
                 "updateTrackedLimbos",
                 "updateView",
                 "validateArgType",
@@ -6435,7 +6435,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 215807
+        "sizeInBytes": 215969
     },
     "onSnapshotsInSync": {
         "dependencies": {
@@ -6644,7 +6644,6 @@
                 "transformOperationEquals",
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
-                "unlisten",
                 "valueCompare",
                 "valueEquals",
                 "verifyNotTerminated",
@@ -6755,7 +6754,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 182745
+        "sizeInBytes": 181339
     },
     "orderBy": {
         "dependencies": {
@@ -7498,7 +7497,6 @@
                 "tryGetCustomObjectType",
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
-                "unlisten",
                 "validateArgType",
                 "validateExactNumberOfArgs",
                 "validateNamedArrayAtLeastNumberOfElements",
@@ -7624,7 +7622,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 198175
+        "sizeInBytes": 196769
     },
     "setLogLevel": {
         "dependencies": {
@@ -8291,7 +8289,6 @@
                 "tryGetCustomObjectType",
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
-                "unlisten",
                 "updateDoc",
                 "validateArgType",
                 "validateExactNumberOfArgs",
@@ -8420,7 +8417,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 199674
+        "sizeInBytes": 198268
     },
     "waitForPendingWrites": {
         "dependencies": {
@@ -8626,7 +8623,6 @@
                 "transformOperationEquals",
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
-                "unlisten",
                 "valueCompare",
                 "valueEquals",
                 "verifyNotTerminated",
@@ -8737,7 +8733,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 181688
+        "sizeInBytes": 180282
     },
     "where": {
         "dependencies": {
@@ -9112,7 +9108,6 @@
                 "tryGetCustomObjectType",
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
-                "unlisten",
                 "validateArgType",
                 "validateExactNumberOfArgs",
                 "validateNamedArrayAtLeastNumberOfElements",
@@ -9244,6 +9239,6 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 203341
+        "sizeInBytes": 201935
     }
 }

@@ -21,7 +21,8 @@ import {
   EventManager,
   listen,
   ListenOptions,
-  QueryListener
+  QueryListener,
+  unlisten
 } from '../../../src/core/event_manager';
 import { Query } from '../../../src/core/query';
 import { OnlineState } from '../../../src/core/types';
@@ -73,8 +74,8 @@ describe('EventManager', () => {
     await listen(eventManager, fakeListener1);
     await listen(eventManager, fakeListener2);
 
-    await eventManager.unlisten(fakeListener2);
-    await eventManager.unlisten(fakeListener1);
+    await unlisten(eventManager, fakeListener2);
+    await unlisten(eventManager, fakeListener1);
   });
 
   it('handles unlisten on unknown listenable gracefully', async () => {
@@ -82,8 +83,7 @@ describe('EventManager', () => {
     const query1 = query('foo/bar');
     const fakeListener1 = fakeQueryListener(query1);
     const eventManager = new EventManager(syncEngineSpy);
-    await eventManager.unlisten(fakeListener1);
-    expect(syncEngineSpy.unlisten.callCount).to.equal(0);
+    await unlisten(eventManager, fakeListener1);
   });
 
   it('notifies listenables in the right order', async () => {

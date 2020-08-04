@@ -77,8 +77,7 @@ import {
   LimboDocumentChange,
   RemovedLimboDocument,
   View,
-  ViewChange,
-  ViewDocumentChanges
+  ViewChange
 } from './view';
 import { ViewSnapshot } from './view_snapshot';
 import { wrapInUserErrorIfRecoverable } from '../util/async_queue';
