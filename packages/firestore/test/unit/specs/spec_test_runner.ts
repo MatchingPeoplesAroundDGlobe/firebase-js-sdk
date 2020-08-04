@@ -22,6 +22,7 @@ import { ComponentConfiguration } from '../../../src/core/component_provider';
 import { DatabaseInfo } from '../../../src/core/database_info';
 import {
   EventManager,
+  listen,
   Observer,
   QueryListener
 } from '../../../src/core/event_manager';
@@ -118,12 +119,12 @@ import {
   EventAggregator,
   MockConnection,
   MockIndexedDbPersistence,
-  MockMemoryPersistence,
-  QueryEvent,
-  SharedWriteTracker,
-  MockMultiTabOfflineComponentProvider,
   MockMemoryOfflineComponentProvider,
-  MockOnlineComponentProvider
+  MockMemoryPersistence,
+  MockMultiTabOfflineComponentProvider,
+  MockOnlineComponentProvider,
+  QueryEvent,
+  SharedWriteTracker
 } from './spec_test_components';
 import { IndexedDbPersistence } from '../../../src/local/indexeddb_persistence';
 import { encodeBase64 } from '../../../src/platform/base64';
@@ -397,7 +398,7 @@ abstract class TestRunner {
     const queryListener = new QueryListener(query, aggregator, options);
     this.queryListeners.set(query, queryListener);
 
-    await this.queue.enqueue(() => this.eventManager.listen(queryListener));
+    await this.queue.enqueue(() => listen(this.eventManager, queryListener));
 
     if (targetFailed) {
       expect(this.persistence.injectFailures).contains('Allocate target');
