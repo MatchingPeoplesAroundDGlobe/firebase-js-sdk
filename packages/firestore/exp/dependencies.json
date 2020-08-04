@@ -1036,7 +1036,6 @@
                 "coercedFieldValuesArray",
                 "compareArrays",
                 "compareBlobs",
-                "compareChangeType",
                 "compareDocs",
                 "compareDocumentsByField",
                 "compareGeoPoints",
@@ -1250,11 +1249,9 @@
                 "DeleteMutation",
                 "DocReference",
                 "Document",
-                "DocumentChangeSet",
                 "DocumentKey",
                 "DocumentKeyReference",
                 "DocumentReference",
-                "DocumentSet",
                 "DocumentWatchChange",
                 "EventManager",
                 "ExistenceFilter",
@@ -1315,8 +1312,6 @@
                 "Precondition",
                 "Query",
                 "QueryImpl",
-                "QueryListenersInfo",
-                "QueryView",
                 "ReferenceSet",
                 "RemoteDocumentChangeBuffer",
                 "RemoteEvent",
@@ -1345,14 +1340,12 @@
                 "User",
                 "UserDataReader",
                 "VerifyMutation",
-                "View",
-                "ViewSnapshot",
                 "WatchChangeAggregator",
                 "WatchTargetChange"
             ],
             "variables": []
         },
-        "sizeInBytes": 212435
+        "sizeInBytes": 200010
     },
     "arrayRemove": {
         "dependencies": {
@@ -1729,7 +1722,6 @@
                 "coercedFieldValuesArray",
                 "compareArrays",
                 "compareBlobs",
-                "compareChangeType",
                 "compareDocs",
                 "compareDocumentsByField",
                 "compareGeoPoints",
@@ -1912,11 +1904,9 @@
                 "DeleteMutation",
                 "DocReference",
                 "Document",
-                "DocumentChangeSet",
                 "DocumentKey",
                 "DocumentKeyReference",
                 "DocumentReference",
-                "DocumentSet",
                 "DocumentWatchChange",
                 "EventManager",
                 "ExistenceFilter",
@@ -1972,8 +1962,6 @@
                 "PersistentWriteStream",
                 "Precondition",
                 "QueryImpl",
-                "QueryListenersInfo",
-                "QueryView",
                 "ReferenceSet",
                 "RemoteDocumentChangeBuffer",
                 "RemoteEvent",
@@ -2000,14 +1988,12 @@
                 "UnknownDocument",
                 "User",
                 "VerifyMutation",
-                "View",
-                "ViewSnapshot",
                 "WatchChangeAggregator",
                 "WatchTargetChange"
             ],
             "variables": []
         },
-        "sizeInBytes": 194823
+        "sizeInBytes": 182398
     },
     "deleteField": {
         "dependencies": {
@@ -2093,7 +2079,6 @@
                 "coercedFieldValuesArray",
                 "compareArrays",
                 "compareBlobs",
-                "compareChangeType",
                 "compareDocs",
                 "compareDocumentsByField",
                 "compareGeoPoints",
@@ -2277,9 +2262,7 @@
                 "DeleteMutation",
                 "DocReference",
                 "Document",
-                "DocumentChangeSet",
                 "DocumentKey",
-                "DocumentSet",
                 "DocumentWatchChange",
                 "EventManager",
                 "ExistenceFilter",
@@ -2335,8 +2318,6 @@
                 "PersistentWriteStream",
                 "Precondition",
                 "QueryImpl",
-                "QueryListenersInfo",
-                "QueryView",
                 "ReferenceSet",
                 "RemoteDocumentChangeBuffer",
                 "RemoteEvent",
@@ -2363,14 +2344,12 @@
                 "UnknownDocument",
                 "User",
                 "VerifyMutation",
-                "View",
-                "ViewSnapshot",
                 "WatchChangeAggregator",
                 "WatchTargetChange"
             ],
             "variables": []
         },
-        "sizeInBytes": 194441
+        "sizeInBytes": 182016
     },
     "doc": {
         "dependencies": {
@@ -3000,6 +2979,7 @@
                 "immediateSuccessor",
                 "indexedDbClearPersistence",
                 "indexedDbStoragePrefix",
+                "initializeViewAndComputeSnapshot",
                 "isArray",
                 "isCollectionGroupQuery",
                 "isDocumentQuery",
@@ -3134,6 +3114,7 @@
                 "transformOperationEquals",
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
+                "updateView",
                 "upgradeMutationBatchSchemaAndMigrateData",
                 "valueCompare",
                 "valueEquals",
@@ -3259,7 +3240,6 @@
                 "PersistentWriteStream",
                 "Precondition",
                 "QueryImpl",
-                "QueryListenersInfo",
                 "QueryTargetMetadata",
                 "QueryView",
                 "ReferenceSet",
@@ -3303,7 +3283,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 301371
+        "sizeInBytes": 300209
     },
     "enableNetwork": {
         "dependencies": {
@@ -3347,7 +3327,6 @@
                 "coercedFieldValuesArray",
                 "compareArrays",
                 "compareBlobs",
-                "compareChangeType",
                 "compareDocs",
                 "compareDocumentsByField",
                 "compareGeoPoints",
@@ -3531,9 +3510,7 @@
                 "DeleteMutation",
                 "DocReference",
                 "Document",
-                "DocumentChangeSet",
                 "DocumentKey",
-                "DocumentSet",
                 "DocumentWatchChange",
                 "EventManager",
                 "ExistenceFilter",
@@ -3589,8 +3566,6 @@
                 "PersistentWriteStream",
                 "Precondition",
                 "QueryImpl",
-                "QueryListenersInfo",
-                "QueryView",
                 "ReferenceSet",
                 "RemoteDocumentChangeBuffer",
                 "RemoteEvent",
@@ -3617,14 +3592,12 @@
                 "UnknownDocument",
                 "User",
                 "VerifyMutation",
-                "View",
-                "ViewSnapshot",
                 "WatchChangeAggregator",
                 "WatchTargetChange"
             ],
             "variables": []
         },
-        "sizeInBytes": 194438
+        "sizeInBytes": 182013
     },
     "endAt": {
         "dependencies": {
@@ -3976,6 +3949,7 @@
                 "getWindow",
                 "hardAssert",
                 "ignoreIfPrimaryLeaseLoss",
+                "initializeViewAndComputeSnapshot",
                 "invalidClassError",
                 "isArray",
                 "isCollectionGroupQuery",
@@ -3996,6 +3970,8 @@
                 "isPlainObject",
                 "isServerTimestamp",
                 "isValidResourceName",
+                "listen",
+                "listen$1",
                 "loadProtos",
                 "localTransformResults",
                 "logDebug",
@@ -4087,6 +4063,7 @@
                 "tryGetCustomObjectType",
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
+                "updateView",
                 "validateArgType",
                 "validateExactNumberOfArgs",
                 "validateNamedArrayAtLeastNumberOfElements",
@@ -4224,7 +4201,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 210789
+        "sizeInBytes": 211256
     },
     "getDocFromCache": {
         "dependencies": {
@@ -4577,6 +4554,7 @@
                 "getWindow",
                 "hardAssert",
                 "ignoreIfPrimaryLeaseLoss",
+                "initializeViewAndComputeSnapshot",
                 "invalidClassError",
                 "isArray",
                 "isCollectionGroupQuery",
@@ -4597,6 +4575,8 @@
                 "isPlainObject",
                 "isServerTimestamp",
                 "isValidResourceName",
+                "listen",
+                "listen$1",
                 "loadProtos",
                 "localTransformResults",
                 "logDebug",
@@ -4688,6 +4668,7 @@
                 "tryGetCustomObjectType",
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
+                "updateView",
                 "validateArgType",
                 "validateExactNumberOfArgs",
                 "validateNamedArrayAtLeastNumberOfElements",
@@ -4825,7 +4806,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 210845
+        "sizeInBytes": 211312
     },
     "getDocs": {
         "dependencies": {
@@ -4931,6 +4912,7 @@
                 "getWindow",
                 "hardAssert",
                 "ignoreIfPrimaryLeaseLoss",
+                "initializeViewAndComputeSnapshot",
                 "invalidClassError",
                 "isArray",
                 "isCollectionGroupQuery",
@@ -4951,6 +4933,8 @@
                 "isPlainObject",
                 "isServerTimestamp",
                 "isValidResourceName",
+                "listen",
+                "listen$1",
                 "loadProtos",
                 "localTransformResults",
                 "logDebug",
@@ -5043,6 +5027,7 @@
                 "tryGetCustomObjectType",
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
+                "updateView",
                 "validateArgType",
                 "validateExactNumberOfArgs",
                 "validateHasExplicitOrderByForLimitToLast",
@@ -5183,7 +5168,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 213352
+        "sizeInBytes": 213819
     },
     "getDocsFromCache": {
         "dependencies": {
@@ -5548,6 +5533,7 @@
                 "getWindow",
                 "hardAssert",
                 "ignoreIfPrimaryLeaseLoss",
+                "initializeViewAndComputeSnapshot",
                 "invalidClassError",
                 "isArray",
                 "isCollectionGroupQuery",
@@ -5568,6 +5554,8 @@
                 "isPlainObject",
                 "isServerTimestamp",
                 "isValidResourceName",
+                "listen",
+                "listen$1",
                 "loadProtos",
                 "localTransformResults",
                 "logDebug",
@@ -5660,6 +5648,7 @@
                 "tryGetCustomObjectType",
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
+                "updateView",
                 "validateArgType",
                 "validateExactNumberOfArgs",
                 "validateNamedArrayAtLeastNumberOfElements",
@@ -5799,7 +5788,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 213090
+        "sizeInBytes": 213557
     },
     "getFirestore": {
         "dependencies": {
@@ -6124,6 +6113,7 @@
                 "hardAssert",
                 "ignoreIfPrimaryLeaseLoss",
                 "implementsAnyMethods",
+                "initializeViewAndComputeSnapshot",
                 "invalidClassError",
                 "isArray",
                 "isCollectionGroupQuery",
@@ -6145,6 +6135,8 @@
                 "isPlainObject",
                 "isServerTimestamp",
                 "isValidResourceName",
+                "listen",
+                "listen$1",
                 "loadProtos",
                 "localTransformResults",
                 "logDebug",
@@ -6238,6 +6230,7 @@
                 "tryGetCustomObjectType",
                 "typeOrder",
                 "uint8ArrayFromBinaryString",
+                "updateView",
                 "validateArgType",
                 "validateExactNumberOfArgs",
                 "validateHasExplicitOrderByForLimitToLast",
@@ -6378,7 +6371,7 @@
             ],
             "variables": []
         },
-        "sizeInBytes": 214435
+        "sizeInBytes": 214902
     },
     "onSnapshotsInSync": {
         "dependencies": {
@@ -6422,7 +6415,6 @@
                 "coercedFieldValuesArray",
                 "compareArrays",
                 "compareBlobs",
-                "compareChangeType",
                 "compareDocs",
                 "compareDocumentsByField",
                 "compareGeoPoints",
@@ -6608,9 +6600,7 @@
                 "DeleteMutation",
                 "DocReference",
                 "Document",
-                "DocumentChangeSet",
                 "DocumentKey",
-                "DocumentSet",
                 "DocumentWatchChange",
                 "EventManager",
                 "ExistenceFilter",
@@ -6666,8 +6656,6 @@
                 "PersistentWriteStream",
                 "Precondition",
                 "QueryImpl",
-                "QueryListenersInfo",
-                "QueryView",
                 "ReferenceSet",
                 "RemoteDocumentChangeBuffer",
                 "RemoteEvent",
@@ -6694,14 +6682,12 @@
                 "UnknownDocument",
                 "User",
                 "VerifyMutation",
-                "View",
-                "ViewSnapshot",
                 "WatchChangeAggregator",
                 "WatchTargetChange"
             ],
             "variables": []
         },
-        "sizeInBytes": 195287
+        "sizeInBytes": 182862
     },
     "orderBy": {
         "dependencies": {
@@ -7260,7 +7246,6 @@
                 "coercedFieldValuesArray",
                 "compareArrays",
                 "compareBlobs",
-                "compareChangeType",
                 "compareDocs",
                 "compareDocumentsByField",
                 "compareGeoPoints",
@@ -7472,11 +7457,9 @@
                 "DeleteMutation",
                 "DocReference",
                 "Document",
-                "DocumentChangeSet",
                 "DocumentKey",
                 "DocumentKeyReference",
                 "DocumentReference",
-                "DocumentSet",
                 "DocumentWatchChange",
                 "EventManager",
                 "ExistenceFilter",
@@ -7536,8 +7519,6 @@
                 "PersistentWriteStream",
                 "Precondition",
                 "QueryImpl",
-                "QueryListenersInfo",
-                "QueryView",
                 "ReferenceSet",
                 "RemoteDocumentChangeBuffer",
                 "RemoteEvent",
@@ -7566,14 +7547,12 @@
                 "User",
                 "UserDataReader",
                 "VerifyMutation",
-                "View",
-                "ViewSnapshot",
                 "WatchChangeAggregator",
                 "WatchTargetChange"
             ],
             "variables": []
         },
-        "sizeInBytes": 210717
+        "sizeInBytes": 198292
     },
     "setLogLevel": {
         "dependencies": {
@@ -8055,7 +8034,6 @@
                 "coercedFieldValuesArray",
                 "compareArrays",
                 "compareBlobs",
-                "compareChangeType",
                 "compareDocs",
                 "compareDocumentsByField",
                 "compareGeoPoints",
@@ -8270,11 +8248,9 @@
                 "DeleteMutation",
                 "DocReference",
                 "Document",
-                "DocumentChangeSet",
                 "DocumentKey",
                 "DocumentKeyReference",
                 "DocumentReference",
-                "DocumentSet",
                 "DocumentWatchChange",
                 "EventManager",
                 "ExistenceFilter",
@@ -8335,8 +8311,6 @@
                 "PersistentWriteStream",
                 "Precondition",
                 "QueryImpl",
-                "QueryListenersInfo",
-                "QueryView",
                 "ReferenceSet",
                 "RemoteDocumentChangeBuffer",
                 "RemoteEvent",
@@ -8365,14 +8339,12 @@
                 "User",
                 "UserDataReader",
                 "VerifyMutation",
-                "View",
-                "ViewSnapshot",
                 "WatchChangeAggregator",
                 "WatchTargetChange"
             ],
             "variables": []
         },
-        "sizeInBytes": 212216
+        "sizeInBytes": 199791
     },
     "waitForPendingWrites": {
         "dependencies": {
@@ -8416,7 +8388,6 @@
                 "coercedFieldValuesArray",
                 "compareArrays",
                 "compareBlobs",
-                "compareChangeType",
                 "compareDocs",
                 "compareDocumentsByField",
                 "compareGeoPoints",
@@ -8599,9 +8570,7 @@
                 "DeleteMutation",
                 "DocReference",
                 "Document",
-                "DocumentChangeSet",
                 "DocumentKey",
-                "DocumentSet",
                 "DocumentWatchChange",
                 "EventManager",
                 "ExistenceFilter",
@@ -8657,8 +8626,6 @@
                 "PersistentWriteStream",
                 "Precondition",
                 "QueryImpl",
-                "QueryListenersInfo",
-                "QueryView",
                 "ReferenceSet",
                 "RemoteDocumentChangeBuffer",
                 "RemoteEvent",
@@ -8685,14 +8652,12 @@
                 "UnknownDocument",
                 "User",
                 "VerifyMutation",
-                "View",
-                "ViewSnapshot",
                 "WatchChangeAggregator",
                 "WatchTargetChange"
             ],
             "variables": []
         },
-        "sizeInBytes": 194230
+        "sizeInBytes": 181805
     },
     "where": {
         "dependencies": {
@@ -8881,7 +8846,6 @@
                 "coercedFieldValuesArray",
                 "compareArrays",
                 "compareBlobs",
-                "compareChangeType",
                 "compareDocs",
                 "compareDocumentsByField",
                 "compareGeoPoints",
@@ -9098,11 +9062,9 @@
                 "DeleteMutation",
                 "DocReference",
                 "Document",
-                "DocumentChangeSet",
                 "DocumentKey",
                 "DocumentKeyReference",
                 "DocumentReference",
-                "DocumentSet",
                 "DocumentWatchChange",
                 "EventManager",
                 "ExistenceFilter",
@@ -9164,8 +9126,6 @@
                 "PersistentWriteStream",
                 "Precondition",
                 "QueryImpl",
-                "QueryListenersInfo",
-                "QueryView",
                 "ReferenceSet",
                 "RemoteDocumentChangeBuffer",
                 "RemoteEvent",
@@ -9194,14 +9154,12 @@
                 "User",
                 "UserDataReader",
                 "VerifyMutation",
-                "View",
-                "ViewSnapshot",
                 "WatchChangeAggregator",
                 "WatchTargetChange",
                 "WriteBatch"
             ],
             "variables": []
         },
-        "sizeInBytes": 215883
+        "sizeInBytes": 203458
     }
 }

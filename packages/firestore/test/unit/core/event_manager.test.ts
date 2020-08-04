@@ -69,11 +69,19 @@ describe('EventManager', () => {
     const syncEngineSpy = makeSyncEngineSpy();
     const eventManager = new EventManager(syncEngineSpy);
 
-    await eventManager.listen(fakeListener1);
-    expect(syncEngineSpy.listen.calledWith(query1)).to.be.true;
+    await listen(eventManager, fakeListener1);
+    expect(
+      async function (listener: QueryListener): Promise<void> {
+        return listen(this, listener);
+      }.calledWith(query1)
+    ).to.be.true;
 
-    await eventManager.listen(fakeListener2);
-    expect(syncEngineSpy.listen.callCount).to.equal(1);
+    await listen(eventManager, fakeListener2);
+    expect(
+      async function (listener: QueryListener): Promise<void> {
+        return listen(this, listener);
+      }.callCount
+    ).to.equal(1);
 
     await eventManager.unlisten(fakeListener2);
     expect(syncEngineSpy.unlisten.callCount).to.equal(0);
@@ -112,10 +120,14 @@ describe('EventManager', () => {
     const syncEngineSpy = makeSyncEngineSpy();
     const eventManager = new EventManager(syncEngineSpy);
 
-    await eventManager.listen(fakeListener1);
-    await eventManager.listen(fakeListener2);
-    await eventManager.listen(fakeListener3);
-    expect(syncEngineSpy.listen.callCount).to.equal(2);
+    await listen(eventManager, fakeListener1);
+    await listen(eventManager, fakeListener2);
+    await listen(eventManager, fakeListener3);
+    expect(
+      async function (listener: QueryListener): Promise<void> {
+        return listen(this, listener);
+      }.callCount
+    ).to.equal(2);
 
     // mock ViewSnapshot.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -143,7 +155,7 @@ describe('EventManager', () => {
     const syncEngineSpy = makeSyncEngineSpy();
     const eventManager = new EventManager(syncEngineSpy);
 
-    await eventManager.listen(fakeListener1);
+    await listen(eventManager, fakeListener1);
     expect(events).to.deep.equal([OnlineState.Unknown]);
     eventManager.onOnlineStateChange(OnlineState.Online);
     expect(events).to.deep.equal([OnlineState.Unknown, OnlineState.Online]);

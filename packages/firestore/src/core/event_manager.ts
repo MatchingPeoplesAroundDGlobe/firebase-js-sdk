@@ -19,7 +19,11 @@ import { debugAssert } from '../util/assert';
 import { EventHandler } from '../util/misc';
 import { ObjectMap } from '../util/obj_map';
 import { canonifyQuery, Query, queryEquals, stringifyQuery } from './query';
-import { SyncEngine, SyncEngineListener } from './sync_engine';
+import {
+  SyncEngine,
+  SyncEngineListener,
+  listen as syncEnginelisten
+} from './sync_engine';
 import { OnlineState } from './types';
 import { ChangeType, DocumentViewChange, ViewSnapshot } from './view_snapshot';
 import { wrapInUserErrorIfRecoverable } from '../util/async_queue';
@@ -47,58 +51,17 @@ export interface Observer<T> {
  * backend.
  */
 export class EventManager implements SyncEngineListener {
-  private queries = new ObjectMap<Query, QueryListenersInfo>(
+  queries = new ObjectMap<Query, QueryListenersInfo>(
     q => canonifyQuery(q),
     queryEquals
   );
 
-  private onlineState = OnlineState.Unknown;
+  onlineState = OnlineState.Unknown;
 
   private snapshotsInSyncListeners: Set<Observer<void>> = new Set();
 
-  constructor(private syncEngine: SyncEngine) {
+  constructor(public syncEngine: SyncEngine) {
     this.syncEngine.subscribe(this);
-  }
-
-  async listen(listener: QueryListener): Promise<void> {
-    const query = listener.query;
-    let firstListen = false;
-
-    let queryInfo = this.queries.get(query);
-    if (!queryInfo) {
-      firstListen = true;
-      queryInfo = new QueryListenersInfo();
-    }
-
-    if (firstListen) {
-      try {
-        queryInfo.viewSnap = await this.syncEngine.listen(query);
-      } catch (e) {
-        const firestoreError = wrapInUserErrorIfRecoverable(
-          e,
-          `Initialization of query '${stringifyQuery(listener.query)}' failed`
-        );
-        listener.onError(firestoreError);
-        return;
-      }
-    }
-
-    this.queries.set(query, queryInfo);
-    queryInfo.listeners.push(listener);
-
-    // Run global snapshot listeners if a consistent snapshot has been emitted.
-    const raisedEvent = listener.applyOnlineStateChange(this.onlineState);
-    debugAssert(
-      !raisedEvent,
-      "applyOnlineStateChange() shouldn't raise an event for brand-new listeners."
-    );
-
-    if (queryInfo.viewSnap) {
-      const raisedEvent = listener.onViewSnapshot(queryInfo.viewSnap);
-      if (raisedEvent) {
-        this.raiseSnapshotsInSyncEvent();
-      }
-    }
   }
 
   async unlisten(listener: QueryListener): Promise<void> {
@@ -180,7 +143,7 @@ export class EventManager implements SyncEngineListener {
   }
 
   // Call all global snapshot listeners that have been set.
-  private raiseSnapshotsInSyncEvent(): void {
+  raiseSnapshotsInSyncEvent(): void {
     this.snapshotsInSyncListeners.forEach(observer => {
       observer.next();
     });
@@ -355,5 +318,52 @@ export class QueryListener {
     );
     this.raisedInitialEvent = true;
     this.queryObserver.next(snap);
+  }
+}
+
+export async function listen(
+  eventManager: EventManager,
+  listener: QueryListener
+): Promise<void> {
+  const query = listener.query;
+  let firstListen = false;
+
+  let queryInfo = eventManager.queries.get(query);
+  if (!queryInfo) {
+    firstListen = true;
+    queryInfo = new QueryListenersInfo();
+  }
+
+  if (firstListen) {
+    try {
+      queryInfo.viewSnap = await syncEnginelisten(
+        eventManager.syncEngine,
+        query
+      );
+    } catch (e) {
+      const firestoreError = wrapInUserErrorIfRecoverable(
+        e,
+        `Initialization of query '${stringifyQuery(listener.query)}' failed`
+      );
+      listener.onError(firestoreError);
+      return;
+    }
+  }
+
+  eventManager.queries.set(query, queryInfo);
+  queryInfo.listeners.push(listener);
+
+  // Run global snapshot listeners if a consistent snapshot has been emitted.
+  const raisedEvent = listener.applyOnlineStateChange(eventManager.onlineState);
+  debugAssert(
+    !raisedEvent,
+    "applyOnlineStateChange() shouldn't raise an event for brand-new listeners."
+  );
+
+  if (queryInfo.viewSnap) {
+    const raisedEvent = listener.onViewSnapshot(queryInfo.viewSnap);
+    if (raisedEvent) {
+      eventManager.raiseSnapshotsInSyncEvent();
+    }
   }
 }

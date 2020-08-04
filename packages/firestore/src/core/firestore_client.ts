@@ -33,7 +33,8 @@ import {
   EventManager,
   ListenOptions,
   Observer,
-  QueryListener
+  QueryListener,
+  listen
 } from './event_manager';
 import { SyncEngine } from './sync_engine';
 import { View } from './view';
@@ -403,7 +404,7 @@ export class FirestoreClient {
     this.verifyNotTerminated();
     const wrappedObserver = new AsyncObserver(observer);
     const listener = new QueryListener(query, wrappedObserver, options);
-    this.asyncQueue.enqueueAndForget(() => this.eventMgr.listen(listener));
+    this.asyncQueue.enqueueAndForget(() => listen(this.eventMgr, listener));
     return () => {
       wrappedObserver.mute();
       this.asyncQueue.enqueueAndForget(() => this.eventMgr.unlisten(listener));
@@ -569,7 +570,7 @@ export function enqueueListen(
 ): Unsubscribe {
   const wrappedObserver = new AsyncObserver(observer);
   const listener = new QueryListener(query, wrappedObserver, options);
-  asyncQueue.enqueueAndForget(() => eventManger.listen(listener));
+  asyncQueue.enqueueAndForget(() => listen(eventManger, listener));
   return () => {
     wrappedObserver.mute();
     asyncQueue.enqueueAndForget(() => eventManger.unlisten(listener));

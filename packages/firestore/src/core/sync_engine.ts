@@ -159,13 +159,6 @@ export interface SyncEngine extends RemoteSyncer {
   /** Subscribes to SyncEngine notifications. Has to be called exactly once. */
   subscribe(syncEngineListener: SyncEngineListener): void;
 
-  /**
-   * Initiates the new listen, resolves promise when listen enqueued to the
-   * server. All the subsequent view snapshots or errors are sent to the
-   * subscribed handlers. Returns the initial snapshot.
-   */
-  listen(query: Query): Promise<ViewSnapshot>;
-
   /** Stops listening to the query. */
   unlisten(query: Query): Promise<void>;
 
@@ -249,12 +242,20 @@ class SyncEngineImpl implements SyncEngine {
   private pendingWritesCallbacks = new Map<BatchId, Array<Deferred<void>>>();
   private limboTargetIdGenerator = TargetIdGenerator.forSyncEngine();
 
-  private onlineState = OnlineState.Unknown;
+  onlineState = OnlineState.Unknown;
 
   // The primary state is set to `true` or `false` immediately after Firestore
   // startup. In the interim, a client should only be considered primary if
   // `isPrimary` is true.
   _isPrimaryClient: undefined | boolean = undefined;
+  _updater?: OmitThisParameter<
+    (
+      syncEngineImpl: SyncEngineImpl,
+      queryView: QueryView,
+      changes: MaybeDocumentMap,
+      remoteEvent?: RemoteEvent
+    ) => Promise<ViewSnapshot | undefined>
+  >;
 
   constructor(
     public localStore: LocalStore,
@@ -281,86 +282,6 @@ class SyncEngineImpl implements SyncEngine {
     );
 
     this.syncEngineListener = syncEngineListener;
-  }
-
-  async listen(query: Query): Promise<ViewSnapshot> {
-    this.assertSubscribed('listen()');
-
-    let targetId;
-    let viewSnapshot;
-
-    const queryView = this.queryViewsByQuery.get(query);
-    if (queryView) {
-      // PORTING NOTE: With Multi-Tab Web, it is possible that a query view
-      // already exists when EventManager calls us for the first time. This
-      // happens when the primary tab is already listening to this query on
-      // behalf of another tab and the user of the primary also starts listening
-      // to the query. EventManager will not have an assigned target ID in this
-      // case and calls `listen` to obtain this ID.
-      targetId = queryView.targetId;
-      this.sharedClientState.addLocalQueryTarget(targetId);
-      viewSnapshot = queryView.view.computeInitialSnapshot();
-    } else {
-      const targetData = await this.localStore.allocateTarget(
-        queryToTarget(query)
-      );
-
-      const status = this.sharedClientState.addLocalQueryTarget(
-        targetData.targetId
-      );
-      targetId = targetData.targetId;
-      viewSnapshot = await this.initializeViewAndComputeSnapshot(
-        query,
-        targetId,
-        status === 'current'
-      );
-      if (this.isPrimaryClient) {
-        this.remoteStore.listen(targetData);
-      }
-    }
-
-    return viewSnapshot;
-  }
-
-  /**
-   * Registers a view for a previously unknown query and computes its initial
-   * snapshot.
-   */
-  async initializeViewAndComputeSnapshot(
-    query: Query,
-    targetId: TargetId,
-    current: boolean
-  ): Promise<ViewSnapshot> {
-    const queryResult = await this.localStore.executeQuery(
-      query,
-      /* usePreviousResults= */ true
-    );
-    const view = new View(query, queryResult.remoteKeys);
-    const viewDocChanges = view.computeDocChanges(queryResult.documents);
-    const synthesizedTargetChange = TargetChange.createSynthesizedTargetChangeForCurrentChange(
-      targetId,
-      current && this.onlineState !== OnlineState.Offline
-    );
-    const viewChange = view.applyChanges(
-      viewDocChanges,
-      /* updateLimboDocuments= */ this.isPrimaryClient,
-      synthesizedTargetChange
-    );
-    this.updateTrackedLimbos(targetId, viewChange.limboChanges);
-
-    debugAssert(
-      !!viewChange.snapshot,
-      'applyChanges for new view should always return a snapshot'
-    );
-
-    const data = new QueryView(query, targetId, view);
-    this.queryViewsByQuery.set(query, data);
-    if (this.queriesByTarget.has(targetId)) {
-      this.queriesByTarget.get(targetId)!.push(query);
-    } else {
-      this.queriesByTarget.set(targetId, [query]);
-    }
-    return viewChange.snapshot!;
   }
 
   async unlisten(query: Query): Promise<void> {
@@ -831,52 +752,24 @@ class SyncEngineImpl implements SyncEngine {
 
     this.queryViewsByQuery.forEach((_, queryView) => {
       queriesProcessed.push(
-        Promise.resolve()
-          .then(() => {
-            const viewDocChanges = queryView.view.computeDocChanges(changes);
-            if (!viewDocChanges.needsRefill) {
-              return viewDocChanges;
-            }
-            // The query has a limit and some docs were removed, so we need
-            // to re-run the query against the local store to make sure we
-            // didn't lose any good docs that had been past the limit.
-            return this.localStore
-              .executeQuery(queryView.query, /* usePreviousResults= */ false)
-              .then(({ documents }) => {
-                return queryView.view.computeDocChanges(
-                  documents,
-                  viewDocChanges
-                );
-              });
-          })
-          .then((viewDocChanges: ViewDocumentChanges) => {
-            const targetChange =
-              remoteEvent && remoteEvent.targetChanges.get(queryView.targetId);
-            const viewChange = queryView.view.applyChanges(
-              viewDocChanges,
-              /* updateLimboDocuments= */ this.isPrimaryClient,
-              targetChange
-            );
-            this.updateTrackedLimbos(
-              queryView.targetId,
-              viewChange.limboChanges
-            );
-            if (viewChange.snapshot) {
+        this._updater!(this, queryView, changes, remoteEvent).then(
+          viewSnapshot => {
+            if (viewSnapshot) {
               if (this.isPrimaryClient) {
                 this.sharedClientState.updateQueryState(
                   queryView.targetId,
-                  viewChange.snapshot.fromCache ? 'not-current' : 'current'
+                  viewSnapshot.fromCache ? 'not-current' : 'current'
                 );
               }
-
-              newSnaps.push(viewChange.snapshot);
+              newSnaps.push(viewSnapshot);
               const docChanges = LocalViewChanges.fromSnapshot(
                 queryView.targetId,
-                viewChange.snapshot
+                viewSnapshot
               );
               docChangesInAllViews.push(docChanges);
             }
-          })
+          }
+        )
       );
     });
 
@@ -1159,7 +1052,8 @@ async function synchronizeQueryViewsAndRaiseSnapshots(
       const target = await getCachedTarget(syncEngineImpl.localStore, targetId);
       debugAssert(!!target, `Target for id ${targetId} not found`);
       targetData = await syncEngineImpl.localStore.allocateTarget(target);
-      await syncEngineImpl.initializeViewAndComputeSnapshot(
+      await initializeViewAndComputeSnapshot(
+        syncEngineImpl,
         synthesizeTargetToQuery(target!),
         targetId,
         /*current=*/ false
@@ -1270,7 +1164,8 @@ export async function applyActiveTargetsChange(
     const target = await getCachedTarget(syncEngineImpl.localStore, targetId);
     debugAssert(!!target, `Query data for active target ${targetId} not found`);
     const targetData = await syncEngineImpl.localStore.allocateTarget(target);
-    await syncEngineImpl.initializeViewAndComputeSnapshot(
+    await initializeViewAndComputeSnapshot(
+      syncEngineImpl,
       synthesizeTargetToQuery(target),
       targetData.targetId,
       /*current=*/ false
@@ -1294,4 +1189,128 @@ export async function applyActiveTargetsChange(
       })
       .catch(ignoreIfPrimaryLeaseLoss);
   }
+}
+
+/**
+ * Initiates the new listen, resolves promise when listen enqueued to the
+ * server. All the subsequent view snapshots or errors are sent to the
+ * subscribed handlers. Returns the initial snapshot.
+ */
+export async function listen(
+  syncEngine: SyncEngine,
+  query: Query
+): Promise<ViewSnapshot> {
+  const syncEngineImpl = debugCast(syncEngine, SyncEngineImpl);
+  syncEngineImpl.assertSubscribed('listen()');
+
+  let targetId;
+  let viewSnapshot;
+
+  const queryView = syncEngineImpl.queryViewsByQuery.get(query);
+  if (queryView) {
+    // PORTING NOTE: With Multi-Tab Web, it is possible that a query view
+    // already exists when EventManager calls us for the first time. This
+    // happens when the primary tab is already listening to this query on
+    // behalf of another tab and the user of the primary also starts listening
+    // to the query. EventManager will not have an assigned target ID in this
+    // case and calls `listen` to obtain this ID.
+    targetId = queryView.targetId;
+    syncEngineImpl.sharedClientState.addLocalQueryTarget(targetId);
+    viewSnapshot = queryView.view.computeInitialSnapshot();
+  } else {
+    const targetData = await syncEngineImpl.localStore.allocateTarget(
+      queryToTarget(query)
+    );
+
+    const status = syncEngineImpl.sharedClientState.addLocalQueryTarget(
+      targetData.targetId
+    );
+    targetId = targetData.targetId;
+    viewSnapshot = await initializeViewAndComputeSnapshot(
+      syncEngineImpl,
+      query,
+      targetId,
+      status === 'current'
+    );
+    if (syncEngineImpl.isPrimaryClient) {
+      syncEngineImpl.remoteStore.listen(targetData);
+    }
+  }
+
+  return viewSnapshot;
+}
+
+/**
+ * Registers a view for a previously unknown query and computes its initial
+ * snapshot.
+ */
+async function initializeViewAndComputeSnapshot(
+  syncEngineImpl: SyncEngineImpl,
+  query: Query,
+  targetId: TargetId,
+  current: boolean
+): Promise<ViewSnapshot> {
+  const queryResult = await syncEngineImpl.localStore.executeQuery(
+    query,
+    /* usePreviousResults= */ true
+  );
+  const view = new View(query, queryResult.remoteKeys);
+  const viewDocChanges = view.computeDocChanges(queryResult.documents);
+  const synthesizedTargetChange = TargetChange.createSynthesizedTargetChangeForCurrentChange(
+    targetId,
+    current && syncEngineImpl.onlineState !== OnlineState.Offline
+  );
+  const viewChange = view.applyChanges(
+    viewDocChanges,
+    /* updateLimboDocuments= */ syncEngineImpl.isPrimaryClient,
+    synthesizedTargetChange
+  );
+  syncEngineImpl.updateTrackedLimbos(targetId, viewChange.limboChanges);
+
+  debugAssert(
+    !!viewChange.snapshot,
+    'applyChanges for new view should always return a snapshot'
+  );
+
+  const data = new QueryView(query, targetId, view);
+  syncEngineImpl.queryViewsByQuery.set(query, data);
+  if (syncEngineImpl.queriesByTarget.has(targetId)) {
+    syncEngineImpl.queriesByTarget.get(targetId)!.push(query);
+  } else {
+    syncEngineImpl.queriesByTarget.set(targetId, [query]);
+  }
+  syncEngineImpl._updater = updateView.bind(null);
+  return viewChange.snapshot!;
+}
+
+async function updateView(
+  syncEngineImpl: SyncEngineImpl,
+  queryView: QueryView,
+  changes: MaybeDocumentMap,
+  remoteEvent?: RemoteEvent
+): Promise<ViewSnapshot | undefined> {
+  let viewDocChanges = queryView.view.computeDocChanges(changes);
+  if (viewDocChanges.needsRefill) {
+    // The query has a limit and some docs were removed, so we need
+    // to re-run the query against the local store to make sure we
+    // didn't lose any good docs that had been past the limit.
+    viewDocChanges = await syncEngineImpl.localStore
+      .executeQuery(queryView.query, /* usePreviousResults= */ false)
+      .then(({ documents }) => {
+        return queryView.view.computeDocChanges(documents, viewDocChanges);
+      });
+  }
+
+  const targetChange =
+    remoteEvent && remoteEvent.targetChanges.get(queryView.targetId);
+  const viewChange = queryView.view.applyChanges(
+    viewDocChanges,
+    /* updateLimboDocuments= */ syncEngineImpl.isPrimaryClient,
+    targetChange
+  );
+  syncEngineImpl.updateTrackedLimbos(
+    queryView.targetId,
+    viewChange.limboChanges
+  );
+  return viewChange.snapshot;
 }
